@@ -1,16 +1,18 @@
+import asyncio
 import logging
 from pathlib import Path
 
 from app.config import load_config
 from app.config.logging_config import setup_logging
 from app.models.config.main import Paths
+from app.services.downloader import Downloader
 from app.services.foo import foo
 
 
 logger = logging.getLogger(__name__)
 
 
-def main():
+async def main():
     paths = Paths(Path(__file__).parent.parent)
     setup_logging(paths)
 
@@ -19,7 +21,11 @@ def main():
     logger.info("started")
 
     foo(config)
+    client = Downloader("http://lytkarino.com")
+    body = await client.download_index()
+    print(body)
+    await client.close()
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
