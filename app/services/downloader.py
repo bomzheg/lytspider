@@ -1,5 +1,7 @@
 import aiohttp
 
+from app.models import dto
+
 
 class Downloader:
     def __init__(self, base_url: str):
@@ -9,12 +11,24 @@ class Downloader:
             raise_for_status=True,
         )
 
-    async def download_index(self):
-        async with self.session.get("/") as resp:
-            if resp.content_type == "text/html":
-                return resp.content
-            else:
-                return resp.url
+    async def download_index(self) -> dto.Page:
+        return await self.download_page("/")
+
+    async def download_page(self, url: str) -> dto.Page:
+        async with self.session.get(url) as resp:
+            content = (await resp.content.read()).decode()
+            return dto.Page(
+                url=str(resp.url),
+                content=content,
+                mime_type=resp.content_type,
+                hash=hex(hash(content)),
+            )
 
     async def close(self):
         await self.session.close()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.close()

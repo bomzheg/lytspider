@@ -7,10 +7,16 @@ from app.models import db
 
 @dataclass
 class Page:
-    db_id: int
     url: str
     content: str
-    hash: str
+    mime_type: str
+    hash: str = None
+    db_id: int = None
+    links: list[str] = None
+
+    def __post_init__(self):
+        if self.links is None:
+            self.links = []
 
     @classmethod
     def from_db(cls, page: db.Page) -> Page:
@@ -19,4 +25,5 @@ class Page:
             url=page.url,
             content=page.content,
             hash=page.hash,
+            mime_type=page.mime_type,
         )

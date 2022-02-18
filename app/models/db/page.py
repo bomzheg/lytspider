@@ -10,6 +10,7 @@ class Page(Base):
     url = Column(Text, nullable=True)
     content = Column(Text, nullable=True)
     hash = Column(Text, nullable=True)
+    mime_type = Column(Text, nullable=True)
 
     def __repr__(self):
         rez = (
