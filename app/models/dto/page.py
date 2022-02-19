@@ -10,6 +10,7 @@ class Page:
     url: str
     content: str
     mime_type: str
+    target_content: str = None
     hash: str = None
     db_id: int = None
     links: list[str] = None

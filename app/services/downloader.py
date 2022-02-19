@@ -21,7 +21,7 @@ class Downloader:
                 url=str(resp.url),
                 content=content,
                 mime_type=resp.content_type,
-                hash=hex(hash(content)),
+
             )
 
     async def close(self):
