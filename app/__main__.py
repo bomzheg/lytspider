@@ -22,12 +22,12 @@ async def main():
     logger.info("started")
 
     pool = create_pool(config.db)
-    async with pool() as session:
+    async with pool() as session, Notifier() as notifier:
         await ParserFacade(
             url="http://lytkarino.com",
             xpath="//table",
             dao=HolderDao(session=session),
-            notifier=Notifier(),
+            notifier=notifier,
         ).run()
 
 
