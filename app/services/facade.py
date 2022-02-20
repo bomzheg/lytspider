@@ -5,7 +5,7 @@ from app.models import dto
 from app.services.downloader import Downloader
 from app.services.notifier import Notifier
 from app.services.page import upsert_page
-from app.services.parser import parse_links, parse_content
+from app.services.parser import parse_page
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,9 @@ class ParserFacade:
             visited_url.add(page.url)
 
     def update_page(self, page: dto.Page):
-        page.links = parse_links(page.content, self.url)
+        parsed_data = parse_page(page.content, page.url, self.xpath)
+        page.links = parsed_data.links
         logger.debug("found links %s", page.links)
-        page.target_content = parse_content(page.content, self.xpath)
+        page.target_content = parsed_data.target
         page.hash = hex(hash(page.target_content))
 
