@@ -11,11 +11,12 @@ class PageService:
 
     async def upsert_page(self, page: dto.Page):
         try:
-            await self.dao.page.get_by_url(page.url)
+            saved_page = await self.dao.page.get_by_url(page.url)
         except NoSavedPage:
             was_saved = False
+            await self.dao.page.save_page(page)
         else:
-            was_saved = True
-        if was_saved:
+            was_saved = saved_page == page
+        if not was_saved:
             await self.notifier.notify_changed(page)
 

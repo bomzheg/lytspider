@@ -13,12 +13,29 @@ class PageDao(BaseDAO[db.Page]):
 
     async def get_by_url(self, url: str) -> dto.Page:
         try:
-            return await self._get_by_url(url)
+            saved_page = await self._get_by_url(url)
+            return dto.Page.from_db(saved_page)
         except NoResultFound as e:
             raise NoSavedPage from e
+
+    async def save_page(self, page: dto.Page):
+        db_page = db_from_dto(page)
+        await self.save(db_page)
 
     async def _get_by_url(self, url: str) -> db.Page:
         result = await self.session.execute(
             select(db.Page).where(db.Page.url == url)
         )
         return result.scalar_one()
+
+
+def db_from_dto(page: dto.Page) -> db.Page:
+    db_page = db.Page(
+        url=page.url,
+        mime_type=page.mime_type,
+        hash=page.hash,
+    )
+    if page.is_text_type():
+        db_page.content = page.content
+    return db_page
+

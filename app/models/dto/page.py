@@ -33,6 +33,14 @@ class Page:
             mime_type=page.mime_type,
         )
 
+    def __eq__(self, other: Page) -> bool:
+        return all([
+            isinstance(other, Page),
+            self.url == other.url,
+            self.mime_type == other.mime_type,
+            self.hash == other.hash,
+        ])
+
     def __repr__(self):
         return (
             f"<Page "
