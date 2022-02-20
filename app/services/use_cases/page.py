@@ -14,7 +14,8 @@ class PageService:
             saved_page = await self.dao.page.get_by_url(page.url)
         except NoSavedPage:
             was_saved = False
-            await self.dao.page.save_page(page)
+            self.dao.page.save_page(page)
+            await self.dao.commit()
         else:
             was_saved = saved_page == page
         if not was_saved:

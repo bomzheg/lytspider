@@ -26,7 +26,7 @@ async def main():
     async with pool() as session, Notifier() as notifier:
         await ParserFacade(
             url="http://lytkarino.com",
-            xpath="//table",
+            xpath='//tr[@height="100%"]/td[@width="100%"]/table',
             page_use_case=PageService(
                 dao=HolderDao(session=session),
                 notifier=notifier,

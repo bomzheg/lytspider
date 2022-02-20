@@ -1,5 +1,8 @@
+import logging
 from dataclasses import dataclass
 from lxml import etree
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -36,4 +39,9 @@ def parse_content(html_tree, xpath: str) -> str:
     :param html_tree: HTML of all page
     :return: target html tag and all
     """
-    return str(html_tree.xpath(xpath))
+    result = html_tree.xpath(xpath)
+    try:
+        return etree.tostring(result[0]).decode()
+    except IndexError:
+        logger.warning("not found element by xpath %s", xpath)
+        return ""

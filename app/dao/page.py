@@ -18,9 +18,9 @@ class PageDao(BaseDAO[db.Page]):
         except NoResultFound as e:
             raise NoSavedPage from e
 
-    async def save_page(self, page: dto.Page):
+    def save_page(self, page: dto.Page):
         db_page = db_from_dto(page)
-        await self.save(db_page)
+        self.save(db_page)
 
     async def _get_by_url(self, url: str) -> db.Page:
         result = await self.session.execute(
@@ -36,6 +36,6 @@ def db_from_dto(page: dto.Page) -> db.Page:
         hash=page.hash,
     )
     if page.is_text_type():
-        db_page.content = page.content
+        db_page.content = page.target_content
     return db_page
 
