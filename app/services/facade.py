@@ -1,21 +1,18 @@
 import logging
 from collections import deque
-from app.dao import HolderDao
 from app.models import dto
 from app.services.downloader import Downloader
-from app.services.notifier import Notifier
-from app.services.page import upsert_page
+from app.services.use_cases.page import PageService
 from app.services.parser import parse_page
 
 logger = logging.getLogger(__name__)
 
 
 class ParserFacade:
-    def __init__(self, url: str, xpath: str, notifier: Notifier, dao: HolderDao):
+    def __init__(self, url: str, xpath: str, page_use_case: PageService):
         self.url = url
         self.xpath = xpath
-        self.notifier = notifier
-        self.dao = dao
+        self.page_use_case = page_use_case
 
     async def run(self):
         async with Downloader() as client:
@@ -33,9 +30,7 @@ class ParserFacade:
             logger.info("downloaded page %s", page)
             if page.is_text_type():
                 self.update_page(page)
-            was_changed = await upsert_page(page, self.dao)
-            if was_changed:
-                await self.notifier.notify_changed(page)
+            await self.page_use_case.upsert_page(page)
             queue.extend(page.links)
             visited_url.add(page.url)
 

@@ -1,0 +1,2 @@
+class NoSavedPage(Exception):
+    pass

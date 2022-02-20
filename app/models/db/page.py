@@ -7,7 +7,7 @@ class Page(Base):
     __tablename__ = "pages"
     __mapper_args__ = {"eager_defaults": True}
     id = Column(BigInteger, primary_key=True)
-    url = Column(Text, nullable=True)
+    url = Column(Text, nullable=False, unique=True)
     content = Column(Text, nullable=True)
     hash = Column(Text, nullable=True)
     mime_type = Column(Text, nullable=True)

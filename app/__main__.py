@@ -9,6 +9,7 @@ from app.models.config.main import Paths
 from app.models.db import create_pool
 from app.services.facade import ParserFacade
 from app.services.notifier import Notifier
+from app.services.use_cases.page import PageService
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,10 @@ async def main():
         await ParserFacade(
             url="http://lytkarino.com",
             xpath="//table",
-            dao=HolderDao(session=session),
-            notifier=notifier,
+            page_use_case=PageService(
+                dao=HolderDao(session=session),
+                notifier=notifier,
+            )
         ).run()
 
 
