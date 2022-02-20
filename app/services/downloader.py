@@ -4,7 +4,7 @@ from app.models import dto
 
 
 class Downloader:
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str = None):
         self.base_url = base_url
         self.session = aiohttp.ClientSession(
             base_url=base_url,

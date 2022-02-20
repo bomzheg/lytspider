@@ -18,15 +18,18 @@ class ParserFacade:
         self.dao = dao
 
     async def run(self):
-        async with Downloader(self.url) as client:
+        async with Downloader() as client:
             await self.parse_links_graph(client)
 
     async def parse_links_graph(self, client: Downloader):
         visited_url = set()
         queue = deque()
-        queue.append("/")
+        queue.append(self.url)
         while queue:
-            page = await client.download_page(queue.pop())
+            url = queue.pop()
+            if url in visited_url:
+                continue
+            page = await client.download_page(url)
             logger.info("downloaded page %s", page)
             self.update_page(page)
             was_changed = await upsert_page(page, self.dao)

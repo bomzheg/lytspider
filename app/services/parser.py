@@ -1,3 +1,6 @@
+from lxml import etree
+
+
 def parse_links(content: str, base_url: str) -> list[str]:
     """
     get all internal links in site
@@ -6,7 +9,9 @@ def parse_links(content: str, base_url: str) -> list[str]:
     :param content: HTML with all content
     :return: list of all internal links of site
     """
-    return []
+    html_tree = etree.HTML(content, base_url=base_url)
+    links = html_tree.xpath(f'//a[contains(@href, "{base_url}")]/@href')
+    return list(map(str, links))
 
 
 def parse_content(content: str, xpath: str) -> str:
