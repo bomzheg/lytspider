@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from collections import deque
 from app.models import dto
@@ -25,6 +26,7 @@ class ParserFacade:
         while queue:
             url = queue.pop()
             if url in visited_url:
+                logger.debug("skip visited url %s", url)
                 continue
             page = await client.download_page(url)
             logger.info("downloaded page %s", page)
@@ -39,5 +41,8 @@ class ParserFacade:
         parsed_data = parse_page(page.content, page.url, self.config)
         page.links = parsed_data.links
         page.target_content = parsed_data.target
-        page.hash = hex(hash(page.target_content))
+
+        hash_ = hashlib.md5()
+        hash_.update(page.target_content.encode())
+        page.hash = hash_.hexdigest()
 

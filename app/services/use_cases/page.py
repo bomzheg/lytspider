@@ -19,6 +19,6 @@ class PageService:
         else:
             was_saved = saved_page == page
             if not was_saved:
-                await self.notifier.notify_changed(page)
+                await self.notifier.notify_changed(page, saved_page)
                 await self.dao.page.update_page(page)
                 await self.dao.commit()
