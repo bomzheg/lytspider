@@ -10,6 +10,9 @@ class Notifier:
     async def notify_changed(self, page: dto.Page):
         self.logger.critical("page was changed %s", page)
 
+    async def notify_created(self, page: dto.Page):
+        self.logger.warning("page was created %s", page)
+
     async def __aenter__(self):
         return self
 

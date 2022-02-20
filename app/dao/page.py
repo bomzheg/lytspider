@@ -22,11 +22,25 @@ class PageDao(BaseDAO[db.Page]):
         db_page = db_from_dto(page)
         self.save(db_page)
 
+    async def update_page(self, page: dto.Page, db_id: int = None):
+        if (id_ := db_id or page.db_id) is not None:
+            saved_page = await self.session.get(db.Page, id_)
+        else:
+            saved_page = await self._get_by_url(page.url)
+        update_page(source=page, target=saved_page)
+        self.save(saved_page)
+
     async def _get_by_url(self, url: str) -> db.Page:
         result = await self.session.execute(
             select(db.Page).where(db.Page.url == url)
         )
         return result.scalar_one()
+
+
+def update_page(source: dto.Page, target: db.Page):
+    assert target.url == source.url
+    target.content = source.content
+    target.hash = source.hash
 
 
 def db_from_dto(page: dto.Page) -> db.Page:
