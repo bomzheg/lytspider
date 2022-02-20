@@ -28,3 +28,13 @@ class Page:
             hash=page.hash,
             mime_type=page.mime_type,
         )
+
+    def __repr__(self):
+        return (
+            f"<Page "
+            f"url={self.url} "
+            f"mime-type={self.mime_type} "
+            f"hash={self.hash} "
+            f"db_id={self.db_id}"
+            f">"
+        )
