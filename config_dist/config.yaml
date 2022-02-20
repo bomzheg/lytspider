@@ -1,2 +1,6 @@
-
+parser:
+  url: "https://example.com"
+  default_xpath: '//tr[@height="100%"]/td[@width="100%"]/table'
+  special_xpaths:
+    "https://example.com/liderboard": "//table"
 

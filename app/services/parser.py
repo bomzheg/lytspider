@@ -2,6 +2,8 @@ import logging
 from dataclasses import dataclass
 from lxml import etree
 
+from app.models.config.main import ParserConfig
+
 logger = logging.getLogger(__name__)
 
 
@@ -11,11 +13,11 @@ class ParsedData:
     target: str
 
 
-def parse_page(content: str, base_url: str, xpath: str):
-    html_tree = etree.HTML(content, base_url=base_url)
+def parse_page(content: str, url: str, config: ParserConfig):
+    html_tree = etree.HTML(content, base_url=url)
     return ParsedData(
-        links=parse_links(html_tree=html_tree, base_url=base_url),
-        target=parse_content(html_tree=html_tree, xpath=xpath),
+        links=parse_links(html_tree=html_tree, base_url=config.url),
+        target=parse_content(html_tree=html_tree, url=url, config=config),
     )
 
 
@@ -31,14 +33,11 @@ def parse_links(html_tree, base_url: str) -> list[str]:
     return list(map(str, links))
 
 
-def parse_content(html_tree, xpath: str) -> str:
+def parse_content(html_tree, url: str, config: ParserConfig) -> str:
     """
     get target content from all html
-
-    :param xpath: path of target content
-    :param html_tree: HTML of all page
-    :return: target html tag and all
     """
+    xpath = config.get_xpath(url)
     result = html_tree.xpath(xpath)
     try:
         return etree.tostring(result[0]).decode()

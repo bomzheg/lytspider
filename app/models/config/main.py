@@ -9,6 +9,7 @@ from app.models.config.db import DBConfig
 class Config:
     paths: Paths
     db: DBConfig
+    parser: ParserConfig
 
     @property
     def app_dir(self) -> Path:
@@ -21,6 +22,16 @@ class Config:
     @property
     def log_path(self) -> Path:
         return self.paths.log_path
+
+
+@dataclass
+class ParserConfig:
+    url: str
+    default_xpath: str
+    special_xpaths: dict[str, str]
+
+    def get_xpath(self, url: str) -> str:
+        return self.special_xpaths.get(url, self.default_xpath)
 
 
 @dataclass
