@@ -16,12 +16,13 @@ class Downloader:
 
     async def download_page(self, url: str) -> dto.Page:
         async with self.session.get(url) as resp:
-            content = (await resp.content.read()).decode()
-            return dto.Page(
-                url=str(resp.url),
-                content=content,
-                mime_type=resp.content_type,
-            )
+            page = dto.Page(url=str(resp.url), mime_type=resp.content_type)
+            binary_content = await resp.content.read()
+            if page.is_text_type():
+                page.content = binary_content.decode()
+            else:
+                page.binary_content = binary_content
+            return page
 
     async def close(self):
         await self.session.close()

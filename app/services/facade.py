@@ -31,7 +31,8 @@ class ParserFacade:
                 continue
             page = await client.download_page(url)
             logger.info("downloaded page %s", page)
-            self.update_page(page)
+            if page.is_text_type():
+                self.update_page(page)
             was_changed = await upsert_page(page, self.dao)
             if was_changed:
                 await self.notifier.notify_changed(page)

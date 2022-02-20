@@ -8,8 +8,9 @@ from app.models import db
 @dataclass
 class Page:
     url: str
-    content: str
     mime_type: str
+    content: str = None
+    binary_content: bytes = None
     target_content: str = None
     hash: str = None
     db_id: int = None
@@ -18,6 +19,9 @@ class Page:
     def __post_init__(self):
         if self.links is None:
             self.links = []
+
+    def is_text_type(self):
+        return self.mime_type == "text/html"
 
     @classmethod
     def from_db(cls, page: db.Page) -> Page:
