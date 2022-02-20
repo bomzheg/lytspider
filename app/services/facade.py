@@ -33,11 +33,11 @@ class ParserFacade:
             await self.page_use_case.upsert_page(page)
             queue.extend(page.links)
             visited_url.add(page.url)
+            logger.debug("queue len=%s, visited len=%s", len(queue), len(visited_url))
 
     def update_page(self, page: dto.Page):
         parsed_data = parse_page(page.content, page.url, self.config)
         page.links = parsed_data.links
-        logger.debug("found links %s", page.links)
         page.target_content = parsed_data.target
         page.hash = hex(hash(page.target_content))
 
