@@ -9,6 +9,7 @@ from app.models import db
 class Page:
     url: str
     mime_type: str
+    http_status: int = None
     content: str = None
     binary_content: bytes = None
     target_content: str = None
@@ -22,6 +23,9 @@ class Page:
 
     def is_text_type(self):
         return self.mime_type == "text/html"
+
+    def is_status_ok(self):
+        return self.http_status < 300
 
     @classmethod
     def from_db(cls, page: db.Page) -> Page:

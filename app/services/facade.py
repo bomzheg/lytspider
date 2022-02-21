@@ -32,8 +32,10 @@ class ParserFacade:
             logger.info("downloaded page %s", page)
             if page.is_text_type():
                 self.update_page(page)
+            if page.is_status_ok():
+                page.target_content = page.content
             await self.page_use_case.upsert_page(page)
-            queue.extend(page.links)
+            queue.extend(set(page.links) - visited_url)
             visited_url.add(page.url)
             logger.debug("queue len=%s, visited len=%s", len(queue), len(visited_url))
 
@@ -45,4 +47,3 @@ class ParserFacade:
         hash_ = hashlib.md5()
         hash_.update(page.target_content.encode())
         page.hash = hash_.hexdigest()
-

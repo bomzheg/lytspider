@@ -1,4 +1,5 @@
 import aiohttp
+from aiohttp import ClientResponseError
 
 from app.models import dto
 
@@ -15,14 +16,27 @@ class Downloader:
         return await self.download_page("/")
 
     async def download_page(self, url: str) -> dto.Page:
-        async with self.session.get(url) as resp:
-            page = dto.Page(url=str(resp.url), mime_type=resp.content_type)
-            binary_content = await resp.content.read()
-            if page.is_text_type():
-                page.content = binary_content.decode()
-            else:
-                page.binary_content = binary_content
-            return page
+        try:
+            async with self.session.get(url) as resp:
+                page = dto.Page(
+                    url=str(resp.url),
+                    mime_type=resp.content_type,
+                    http_status=resp.status,
+                )
+                binary_content = await resp.content.read()
+                if page.is_text_type():
+                    page.content = binary_content.decode()
+                else:
+                    page.binary_content = binary_content
+                return page
+        except ClientResponseError as e:
+            return dto.Page(
+                url=url,
+                mime_type="application/json",
+                http_status=e.status,
+                content=e.message,
+            )
+
 
     async def close(self):
         await self.session.close()
