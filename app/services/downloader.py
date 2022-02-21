@@ -1,7 +1,12 @@
+import logging
+
 import aiohttp
 from aiohttp import ClientResponseError
 
 from app.models import dto
+
+
+logger = logging.getLogger(__name__)
 
 
 class Downloader:
@@ -30,6 +35,10 @@ class Downloader:
                     page.binary_content = binary_content
                 return page
         except ClientResponseError as e:
+            logger.warning(
+                "by request to url %s got http status %s with message %s",
+                url, e.status, e.message,
+            )
             return dto.Page(
                 url=url,
                 mime_type="application/json",
